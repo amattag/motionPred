@@ -22,7 +22,7 @@ import probability as pobty
 # Pedestrian Database: http://homepages.inf.ed.ac.uk/rbf/FORUMTRACKING/
 data = np.load("data/tjcs.npy")
 
-# Choose the first 200 trajectories.
+# Choose the first 500 trajectories.
 tjcs = data[:500]
 
 # Plot selected trajectories
