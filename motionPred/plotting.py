@@ -81,6 +81,7 @@ def plot_clusters( e, data ):
       c = np.array( [0.8, 0.8, 0.8] )
       plt.plot( traj[:,0], traj[:,1], "-", color = c, alpha = 0.3 )
         
+
 def plot_time_model( data ):
   """From every cluster, plot a typical trajectory that represents the 
      entire cluster.
