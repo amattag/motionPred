@@ -49,11 +49,7 @@ for m, n in zip(xrange(clustersN), tjcIndex):
     means[m] = tjcs[n]
    
 # Compute covariance Matrix.
-vtjcs = tjcs[0]
-for i in xrange(tjcs.shape[0]):
-    if i != (tjcs.shape[0] - 1):
-        vtjcs = np.vstack((vtjcs, tjcs[i+1]))
-
+vtjcs=tjcs.reshape((tjcsN*tjcsLength, tjcs.shape[2]))
 covariance = np.round(np.cov(vtjcs.T)*np.eye(vtjcs.shape[1]))
 
 ### Let's iterate with the E-M algorithm applying an heuristic that optimizes 
@@ -71,15 +67,12 @@ plt.ion()
 
 iterations = 20
 for i in xrange(iterations):
+    clusters = em.expectation(tjcs, means, covariance, pobty.t_gaussian)
+    em.maximization(tjcs, clusters, means, pobty.t_zero, pobty.t_cummulate)
     # Each iteration, The E-M algorithm is run five times.
-    for j in xrange(5):
-        clusters = em.expectation(tjcs, means, covariance, pobty.t_gaussian)
-        em.maximization(tjcs, clusters, means, pobty.t_zero, pobty.t_cummulate)
-    
-    # This is for plotting the results.
-    plt.title("Clustering, Iteration Number: %s" %(i+1))
-    myplt.plot_clusters(clusters, tjcs)
-    plt.pause(0.01)
+    #for j in xrange(5):
+        #clusters = em.expectation(tjcs, means, covariance, pobty.t_gaussian)
+        #em.maximization(tjcs, clusters, means, pobty.t_zero, pobty.t_cummulate)
     
     # Replace the worst cluster with the worst represented trajectory 
     # to improve the quality of the clusters.    
@@ -95,6 +88,11 @@ for i in xrange(iterations):
             #print "Replacing cluster %i with trajectory %i" % ( c_index, t_index )
             means[c_index] = tjcs[t_index]
             tjcIndex.append( t_index )
+            
+    # This is for plotting the results.
+    plt.title("Clustering, Iteration Number: %s" %(i+1))
+    myplt.plot_clusters(clusters, tjcs)
+    plt.pause(0.01)
 
 # Save means structre, which represents the clusters typical trayectories into
 # a npy file.
