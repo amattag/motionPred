@@ -8,6 +8,7 @@ Implementation of the Expectation-Maximization algorithm to cluster data.
 
 # Import required modules.
 import numpy as np
+from scipy.stats import multivariate_normal
 
 # import auxiliar modules.
 import probability as pobty
@@ -44,6 +45,7 @@ def expectation(tjcs, means, covariance, gaussian):
         for m in xrange(cltsN):
             # Call to Multivariate Gaussian PDF.
             clusters[n, m] = gaussian(means[m], covariance, tjcs[n])
+            #clusters[n, m] = multivariate_normal.pdf(tjcs[n], means[m], covariance)
     return clusters
 
 
@@ -77,7 +79,7 @@ def maximization(tjcs, clusters, means, zero, cummulate):
     for m in xrange(cltsN):
         zero(means[m])
         for n in xrange(tjcsN):
-            cummulate(clusters[n, m], means[m], tjcs[n])
+            cummulate(means[m], clusters[n, m], tjcs[n])
         means[m] /= np.sum(clusters[:, m]) # Normalize
         
 # Functions to optimize the quality of the clusters.
