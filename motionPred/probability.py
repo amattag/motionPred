@@ -22,7 +22,7 @@ def t_zero( trajectory ):
     """
     trajectory *= 0.0
 
-#def t_cummulate( weight, t1, t2 ):
+
 def t_cummulate( t1, weight, t2 ):
     """ Cummulate weighted tjc t2 into t1
     
@@ -38,6 +38,7 @@ def t_cummulate( t1, weight, t2 ):
       Array use to weight another array.
     """
     t1 += weight * t2
+  
         
 def t_gaussian( mean, covariance, value ):
     """ Multivariate Gaussian Probability Distribution Function (PDF)
@@ -56,7 +57,6 @@ def t_gaussian( mean, covariance, value ):
       exp: array
         An array of expected clusters. 
     """
-    #inv = np.linalg.inv(covariance)
     inv = linalg.inv(covariance)
     diff = mean - value
     dist = -0.5 * np.dot(np.dot(diff, inv), diff.transpose())
