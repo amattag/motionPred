@@ -12,6 +12,53 @@ import numpy as np
 # import auxiliar modules.
 import probability as pobty
 
+# BIC Criterion
+def computeBIC(tjcs, means, tjcsN, clustersN):
+	""" Compute the BIC criterion of a given model.
+	
+	Parameters
+	----------
+	tjcs: array
+      Array with the set of trajectories of a given model.
+      
+    means: array
+      Array with  the trajectories used as means.
+      
+    tcsN: int
+      Number of trajectories.
+      
+    clusterN: int
+      Number of clusters.    
+	
+	Returns
+	-------
+	bic: float
+	  A number storing the BIC criterion value. This value help us select
+	  the best number of clusters for a given model.
+	"""
+	
+	errVar = np.zeros((clustersN, tjcsN))  # A matrix that stores the error variance.
+	
+	# Compute the error variance for the set of observations.
+	for n in xrange(clustersN):
+		for m in xrange(tjcsN):
+			# Erro variance function.
+		    diff = tjcs[m] - means[n]
+		    errVar[n, m] = np.sum(np.square(diff)) / tjcsN
+		errVar[n, m] = np.sum(errVar[n, :]) / clustersN 
+	
+	# Total error variance of the model.	    
+	err = np.sum(errVar) / clustersN
+	
+	# Log likelihood of the model.
+	maxLike = err / tjcsN
+	
+	# Compute the BIC Criterion value.
+	bic = tjcsN*np.log(maxLike) + clustersN*np.log(tjcsN)
+	
+	return bic
+	
+	
 # Expectation-Maximization algorithm.
 def expectation(tjcs, means, covariance, gaussian):
     """Expectation step: For every trajectory calculate the Expected likehood
@@ -20,7 +67,7 @@ def expectation(tjcs, means, covariance, gaussian):
     Parameters
     ----------
     tjcs: array
-      An array with a set of trajectories to train the E-M algorithm.
+      Array with a set of trajectories to train the E-M algorithm.
       
     means: array
       Array with  the trajectories used as means.
