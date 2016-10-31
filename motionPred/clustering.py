@@ -10,7 +10,6 @@ Expectation-Maximization (E-M) algorithm.
 # Import required modules.
 import numpy as np
 import matplotlib.pyplot as plt
-import random
 
 # import auxiliar modules.
 import expMax as em
@@ -23,7 +22,7 @@ import probability as pobty
 data = np.load("data/tjcs.npy")
 
 # Choose the first 500 trajectories.
-tjcs = data[:500]
+tjcs = data[:200]
 
 # Plot selected trajectories
 fig1 = plt.figure()
@@ -36,47 +35,41 @@ plt.ylabel('Y (mts)')
 myplt.plot_trajectories(tjcs)
 plt.pause(0.05)
 
-# Initialize the initial mean values structure.
-clustersN = 10                # Number of Clusters (it must be from console).
+# Get number of trajectories and the lenght of every of them.
 tjcsN = tjcs.shape[0]         # Number of Trajectories. 
 tjcsLength = tjcs.shape[1]    # Lenght of each trajectory.
-means = np.zeros((clustersN, tjcsLength, 2))
-
-# Fill initial means structure by selecting trajectories at random.
-tjcIndex = random.sample(np.arange(tjcsN), clustersN)
-for m, n in zip(xrange(clustersN), tjcIndex):
-    means[m] = tjcs[n]
    
+# Select intial means and best number of clusters.
+means = em.selectClusters(tjcs, tjcsN, tjcsLength)
+clustersN = means.shape[0]
+print "nClusters: ", clustersN
+
 # Compute covariance Matrix.
 vtjcs=tjcs.reshape((tjcsN*tjcsLength, tjcs.shape[2]))
 covariance = np.round(np.cov(vtjcs.T)*np.eye(vtjcs.shape[1]))
 
-### Let's iterate with the E-M algorithm applying an heuristic that optimizes 
-# the number of trajectories on every cluster ###
-iterations = 20
-for i in xrange(iterations):
+### Let's iterate with the E-M algorithm ###
+maxIter = 100
+tol = 0.001
+ll_old = 0
+for i in xrange(maxIter):
+	# E-M algorithm.
     clusters = em.expectation(tjcs, means, covariance, pobty.t_gaussian)
     em.maximization(tjcs, clusters, means, pobty.t_zero, pobty.t_cummulate)
-    # Each iteration, The E-M algorithm is run five times.
-    #for j in xrange(5):
-        #clusters = em.expectation(tjcs, means, covariance, pobty.t_gaussian)
-        #em.maximization(tjcs, clusters, means, pobty.t_zero, pobty.t_cummulate)
     
-    # Replace the worst cluster with the worst represented trajectory 
-    # to improve the quality of the clusters.    
-    #if i < iterations - 1:
-        #c_index, c_score = em.worst_cluster(clusters)
-        #t_index, t_score = em.worst_trajectory(clusters, c_index, c_score, 
-                                               #tjcIndex, tjcs, covariance)
-        ## If a worst trajectory is not found.
-        #if t_index == -1:
-            ##break
-            #means[c_index] = -1
-        #else:    
-            #print "Replacing cluster %i with trajectory %i" % ( c_index, t_index )
-            #means[c_index] = tjcs[t_index]
-            #tjcIndex.append( t_index )
-    
+    # Update log likelihoood.
+    ll_new = 0.0
+    for j in range(tjcsN):
+		s = 0
+		for k in range(clustersN):
+			s += pobty.t_gaussian(means[k], covariance, tjcs[j])
+		ll_new += np.log(s)
+		
+    if np.abs(ll_new - ll_old) < tol:
+		break
+	
+    ll_old = ll_new
+	    
     print "Iteration Number: ", i 
     
 # This is to plot the results of the E-M algorithm.
