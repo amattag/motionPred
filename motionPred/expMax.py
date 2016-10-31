@@ -8,18 +8,21 @@ Implementation of the Expectation-Maximization algorithm to cluster data.
 
 # Import required modules.
 import numpy as np
+from scipy import linalg
+import random
 
 # import auxiliar modules.
 import probability as pobty
 
 # BIC Criterion
 def computeBIC(tjcs, means, tjcsN, clustersN):
-	""" Compute the BIC criterion of a given model.
-	
+	""" Compute the The Bayesian Information criterion (BIC) of a given 
+	    model.
+	    
 	Parameters
 	----------
 	tjcs: array
-      Array with the set of trajectories of a given model.
+	  Array with the set of trajectories of a given model.
       
     means: array
       Array with  the trajectories used as means.
@@ -36,29 +39,79 @@ def computeBIC(tjcs, means, tjcsN, clustersN):
 	  A number storing the BIC criterion value. This value help us select
 	  the best number of clusters for a given model.
 	"""
-	
 	errVar = np.zeros((clustersN, tjcsN))  # A matrix that stores the error variance.
+	x = np.zeros(clustersN)
 	
 	# Compute the error variance for the set of observations.
 	for n in xrange(clustersN):
+		centroid = np.sum(means[n], 0) / means[n].shape[0]
 		for m in xrange(tjcsN):
-			# Erro variance function.
-		    diff = tjcs[m] - means[n]
-		    errVar[n, m] = np.sum(np.square(diff)) / tjcsN
-		errVar[n, m] = np.sum(errVar[n, :]) / clustersN 
-	
+			# Error variance function.
+		    diff = tjcs[m] - centroid
+		    errVar[n, m] = np.square(linalg.norm(diff)) 
+		x[n] = np.sum(errVar[n, :]) / clustersN
+		
 	# Total error variance of the model.	    
-	err = np.sum(errVar) / clustersN
+	err = np.sum(x)
 	
-	# Log likelihood of the model.
-	maxLike = err / tjcsN
+	# Log likelihood of the model. 
+	R = clustersN*tjcsN*means[n].shape[0]
+	maxLike = err / (2*(R-clustersN))
 	
-	# Compute the BIC Criterion value.
+	# Compute the BIC Criterion value6.
 	bic = tjcsN*np.log(maxLike) + clustersN*np.log(tjcsN)
 	
 	return bic
 	
-	
+# Select the clusters and number of clusters based on the BIC criterion.
+def selectClusters(tjcs, tjcsN, tjcsLength):
+    """This function selects the number of proper clusters for a given
+       model based on the BIC criterion function.
+    
+    Parameters
+    ----------
+    tjcs: array
+      Array with the set of trajectories.
+      
+    tjcsN: int
+      Number of trajectories.
+      
+    tjcsLenght: int
+      Lenght of each trajectory.
+      
+    Returns
+    -------
+    clusters: array
+      An array with the proper number of clusters.
+    """
+    bicOld = 0
+    for i in xrange(tjcsN):
+		# Fill means structure by selecting a trajectory at random.
+		tjcIndex = 0
+		clustersN = 1
+		tjcIndex = random.sample(np.arange(tjcsN), clustersN)
+		if (i == 0):
+			means = np.zeros((clustersN, tjcsLength, 2)) # Means matrix.
+			means = tjcs[tjcIndex]
+		else:	
+			meansTmp = np.zeros((clustersN, tjcsLength, 2)) # Means matrix.
+			meansTmp = tjcs[tjcIndex]
+			means = np.vstack((means, meansTmp))
+		
+		# Compute BIC criterion value.
+		bicNumber = 0
+		clustersN = means.shape[0] 
+		bicNumber = computeBIC(tjcs, means, tjcsN, clustersN)
+		print "BIC: ", bicNumber
+		
+		# If new BIC value is bigger, return means structure and break.
+		if ((clustersN != 1) and (bicNumber > bicOld)) :
+			return means
+			break
+			
+		bicOld = bicNumber
+		
+		
 # Expectation-Maximization algorithm.
 def expectation(tjcs, means, covariance, gaussian):
     """Expectation step: For every trajectory calculate the Expected likehood
