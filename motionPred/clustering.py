@@ -40,19 +40,21 @@ tjcsN = tjcs.shape[0]         # Number of Trajectories.
 tjcsLength = tjcs.shape[1]    # Lenght of each trajectory.
    
 # Select intial means and best number of clusters.
-means = em.selectClusters(tjcs, tjcsN, tjcsLength)
+means, meansIndexTmp = em.selectClusters(tjcs, tjcsN, tjcsLength)
 clustersN = means.shape[0]
-print "nClusters: ", clustersN
+meansIndex = [i[0] for i in meansIndexTmp]
 
 # Compute covariance Matrix.
 vtjcs=tjcs.reshape((tjcsN*tjcsLength, tjcs.shape[2]))
 covariance = np.round(np.cov(vtjcs.T)*np.eye(vtjcs.shape[1]))
 
 ### Let's iterate with the E-M algorithm ###
-maxIter = 100
+maxIter = 200
 tol = 0.001
 ll_old = 0
-for i in xrange(maxIter):
+i = 0
+#for i in xrange(maxIter):
+while i < maxIter:
 	# E-M algorithm.
     clusters = em.expectation(tjcs, means, covariance, pobty.t_gaussian)
     em.maximization(tjcs, clusters, means, pobty.t_zero, pobty.t_cummulate)
@@ -65,11 +67,32 @@ for i in xrange(maxIter):
 			s += pobty.t_gaussian(means[k], covariance, tjcs[j])
 		ll_new += np.log(s)
 		
+	# If the threshold is below the expected tol factor.
     if np.abs(ll_new - ll_old) < tol:
-		break
-	
-    ll_old = ll_new
-	    
+		# If found, replace the worst cluster with the worst represented trajectory 
+		# in order to improve the quality of the returned clusters.
+		
+		# Finds worst cluster and its index.
+		clusterIndex, clusterScore = em.worst_cluster(clusters)
+		
+		# Finds the index of the worst represented trajectory.
+		tjcIndex = em.worst_trajectory(clusters, clusterIndex, clusterScore, meansIndex, tjcs, covariance)
+		
+		# If the worst represented trajectory score is higher than the worst cluster score,
+		# replace cluster with the found trajectory.
+		if tjcIndex == -1:
+			break
+		else:
+			print "Replacing cluster %i with trajectory %i" % (clusterIndex, tjcIndex)
+			means[clusterIndex] = tjcs[tjcIndex]
+			meansIndex.append(tjcIndex)
+			ll_old = 0
+			i = 0
+			continue
+    else:
+		ll_old = ll_new
+		i += 1
+		 
     print "Iteration Number: ", i 
     
 # This is to plot the results of the E-M algorithm.
