@@ -204,14 +204,14 @@ def worst_cluster(clusters):
       score of the worst cluster.
     """
     clustersN = clusters.shape[1]  # Number of Clusters.
-    withCluster = np.sum(np.max(clusters, 1)) # Sum of best cluster scores.
+    currentClusters = np.sum(np.max(clusters, 1)) # Sum of best cluster scores.
     clusterScores = np.zeros((clustersN, ))
     
     # Find the score of every cluster.
     for m in xrange(clustersN):
         withoutCluster = clusters.copy()
         withoutCluster[:, m] = 0. # Exclude current cluster.
-        clusterScores[m] = withCluster - np.sum(np.max( withoutCluster, 1))
+        clusterScores[m] = currentClusters - np.sum(np.max( withoutCluster, 1))
     
     # The cluster that scores the less is the selected one.    
     clusterIndex = np.argmin(clusterScores)
@@ -266,19 +266,19 @@ def worst_trajectory(clusters, clusterIndex, clusterScore, selected, tjcs, covar
     sortedTjcs = np.argsort(tjcsContribs)
     
     # Structures to store cluster scores.
-    tmpCluster = clusters.copy()  
-    tmpCluster[:, clusterIndex] = 0.0    # Exclude current cluster.
-    withoutCluster = np.sum(np.max(clusters, 1))  # Sum of best cluster scores. 
+    newClusters = clusters.copy()  
+    newClusters[:, clusterIndex] = 0.0    # Exclude current cluster.
+    currentClusters = np.sum(np.max(clusters, 1))  # Sum of best cluster scores. 
     
     # Find new cluster score with worst trajectory. 
     for k in sortedTjcs[:(len(sortedTjcs)/10)]:
 		for n in xrange(tjcsN):
 			# Call the Expectation step using worst trajectory as mean.
-			tmpCluster[n, clusterIndex] = pobty.t_gaussian(tjcs[k], covariance, tjcs[n])
-		tmpCluster[n, clusterIndex] /= np.sum(tmpCluster[:, clusterIndex])  # Normalize
+			newClusters[n, clusterIndex] = pobty.t_gaussian(tjcs[k], covariance, tjcs[n])
+		newClusters[n, clusterIndex] /= np.sum(newClusters[:, clusterIndex])  # Normalize
 		
 		# Difference between cluster with worst Tjc and the old cluster.
-		tjcScore = np.sum(np.max(tmpCluster, 1)) - withoutCluster
+		tjcScore = np.sum(np.max(newClusters, 1)) - currentClusters
 		
 		# If the new cluster score is bigger than the worst cluster one, 
 		# return the index of the tractory.
