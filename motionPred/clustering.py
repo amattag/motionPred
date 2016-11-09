@@ -10,6 +10,8 @@ Expectation-Maximization (E-M) algorithm.
 # Import required modules.
 import numpy as np
 import matplotlib.pyplot as plt
+from os import path
+import time
 import sys
 import random
 
@@ -29,6 +31,12 @@ tjcsN = int(sys.argv[1])     # Number of Trajectories to load.
 clustersN = int(sys.argv[2]) # Number of Clusters.
 maxIter = int(sys.argv[3])   # Maximum number of iterations for the E-M algoritm.
 tol = float(sys.argv[4])     # error tolerance for the E-M algorithm.
+
+# Output input arguments.
+print "Number of Trajectories:", tjcsN
+print "Number of Clusters:", clustersN
+print "E-M iterations:", maxIter
+print "E-M Converge Threshold:", tol
 
 # Load trayectory data from the 'tjcs.npy' file.
 # A set of 1856 trajectories generated from the Edinburgh Informatics Forum 
@@ -124,7 +132,9 @@ myplt.plot_clusters(clusters, tjcs)
 
 # Save means structre, which represents the clusters typical trayectories into
 # a npy file.
-np.save("data/clusters.npy", means)
+timestr = time.strftime("%Y%m%d-%H%M%S")
+filename=path.join("data/"+timestr+"-clusters")
+np.save(filename, means)
     
 # Let's plot the found clusters.
 fig3 = plt.figure()
