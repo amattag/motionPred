@@ -149,7 +149,7 @@ def expectation(tjcs, means, covariance, gaussian):
     return clusters
 
 
-def maximization(tjcs, clusters, means, zero, cummulate):
+def maximization(tjcs, clusters, means, zero):
     """Maximization step: Calculate new cluster models that Maximizes the 
     Expected likehood.
     
@@ -166,9 +166,6 @@ def maximization(tjcs, clusters, means, zero, cummulate):
     
     zero: function
       A function that sets an array to zero.
-    
-    cummulate: function
-      A function to weight data.
     
     Returns
     -------
