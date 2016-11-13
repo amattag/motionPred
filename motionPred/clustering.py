@@ -3,6 +3,8 @@ Clustering with the Expectation-Maximization (E-M) algorithm
 
 Demonstration of how to cluster a set of trajectories using the 
 Expectation-Maximization (E-M) algorithm.
+
+Usage: >python clustering.py $tjcsN $clustersN $maxIter $tol
 """
 
 # Author: Antonio Matta <antonio.matta@upm.es>
@@ -22,7 +24,7 @@ import probability as pobty
 
 # Check if the correct input is given in command-line arguments.
 if len(sys.argv) != 5:
-	print('Usage: ./clustering.py tjcsN clustersN maxIter tol')
+	print('Usage: ./clustering.py $tjcsN $clustersN $maxIter $tol')
 	sys.exit(1)         # Return a non-zero value for abnormal termination
 
 # Load arguments into variables.
@@ -82,7 +84,7 @@ i = 0
 while i < maxIter:
 	# E-M algorithm.
     clusters = em.expectation(tjcs, means, covariance, pobty.t_gaussian)
-    em.maximization(tjcs, clusters, means, pobty.t_zero, pobty.t_cummulate)
+    em.maximization(tjcs, clusters, means, pobty.t_zero)
     
     # Update log likelihoood.
     ll_new = 0.0
