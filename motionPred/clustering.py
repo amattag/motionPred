@@ -50,13 +50,7 @@ tjcs = data[:tjcsN]
 
 # Plot selected trajectories
 fig1 = plt.figure()
-wm = plt.get_current_fig_manager()
-wm.window.wm_geometry("600x500+200+0")
-fig1 = plt.title("Trajectories")
-plt.axis([0,16,0,12])
-plt.xlabel('X (mts)')
-plt.ylabel('Y (mts)')
-myplt.plot_trajectories(tjcs)
+myplt.plot_trajectories(tjcs, "Trajectory", "600x500+200+0")
 plt.pause(0.05)
 
 # Get the length of each trajectory.
@@ -124,13 +118,7 @@ while i < maxIter:
     
 # This is to plot the results of the E-M algorithm.
 fig2 = plt.figure()
-wm = plt.get_current_fig_manager()
-wm.window.wm_geometry("600x500+850+0")
-plt.axis([0,16,0,12])
-plt.xlabel('X (mts)')
-plt.ylabel('Y (mts)')
-plt.title("Clustering, Iteration Number: %s" %(i+1))
-myplt.plot_clusters(clusters, tjcs)
+myplt.plot_clusters(clusters, tjcs, "Results after Clustering", "600x500+850+0")
 
 # Save means structre, which represents the clusters typical trayectories into
 # a npy file.
@@ -140,22 +128,13 @@ np.save(filename, means)
     
 # Let's plot the found clusters.
 fig3 = plt.figure()
-wm = plt.get_current_fig_manager()
-wm.window.wm_geometry("600x500+200+600")
-fig3 = plt.title("Clusters")
-plt.grid()
-plt.xticks(np.arange(0, 16, 1.0))
-plt.yticks(np.arange(0, 12, 1.0))
-plt.xlabel('X (mts)')
-plt.ylabel('Y (mts)')
-fig3 = myplt.plot_time_model(means)
-#fig3 = myplt.plot_trajectories(means)
+myplt.plot_time_model(means, "Clusters", "600x500+200+600")
 
 # Plot cluster contribs
 cluster_contribs = np.sum(clusters, 0)
 fig4 = plt.figure()
 wm = plt.get_current_fig_manager()
 wm.window.wm_geometry("600x500+850+600")
-fig4 = plt.title("Number of Trajectories per Cluster")
-fig4 = plt.bar(np.arange(clustersN), cluster_contribs, color = myplt.generate_palette(clustersN))
+plt.title("Number of Trajectories per Cluster")
+plt.bar(np.arange(clustersN), cluster_contribs, color = myplt.generate_palette(clustersN))
 plt.show()
