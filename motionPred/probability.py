@@ -12,7 +12,7 @@ import numpy as np
 from scipy import linalg
 
 # Auxiliar functions: t_gaussian, t_zero and t_cummulate functions.
-def t_zero( trajectory ):
+def t_zero(trajectory):
     """ Set the values of a trajectory to zero.
     
     Parameters:
@@ -23,7 +23,7 @@ def t_zero( trajectory ):
     trajectory *= 0.0
 
 
-def t_cummulate( t1, weight, t2 ):
+def t_cummulate(t1, weight, t2):
     """ Cummulate weighted tjc t2 into t1
     
     Parameters:
@@ -40,7 +40,7 @@ def t_cummulate( t1, weight, t2 ):
     t1 += weight * t2
   
         
-def t_gaussian( mean, covariance, value ):
+def t_gaussian(mean, covariance, value):
     """ Multivariate Gaussian Probability Distribution Function (PDF)
     
     Parameters:
@@ -57,8 +57,8 @@ def t_gaussian( mean, covariance, value ):
       exp: array
         An array of expected clusters. 
     """
-    inv = linalg.inv(covariance)
+    invCov = linalg.inv(covariance)
     diff = mean - value
-    dist = -0.5 * np.dot(np.dot(diff, inv), diff.transpose())
+    dist = -0.5 * np.dot(np.dot(diff, invCov), diff.transpose())
     exp = np.exp(np.diagonal(dist))
     return np.multiply.reduce(exp)
