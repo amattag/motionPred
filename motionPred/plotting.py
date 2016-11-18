@@ -145,7 +145,7 @@ def plot_prediction( clusters, obs, obsStep, obsIni, belief, prediction ):
   plt.yticks(np.arange(0, 12, 1.0))
   plt.xlabel('X (mts)')
   plt.ylabel('Y (mts)')  
-  plt.title("Prediction for Obs. State Step %s" %obsIni )
+  plt.title("Prediction for Obs %s. State Step: " %obsIni )
   
   # Plot the observations (trajectories)
   plt.plot(obs[:,0], obs[:,1], "x", c = (0.8, 0.1, 0.3))
