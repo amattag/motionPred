@@ -13,7 +13,7 @@ from sklearn.cluster import KMeans
 
 palettes = {}
 
-def generate_palette( count ):
+def generate_palette(count):
   """Generates a color id to every cluster.
   
   Parameters
@@ -35,69 +35,92 @@ def generate_palette( count ):
   return palettes[count]
 
 
-def plot_trajectories( data ):
+def plot_trajectories(tjcs, title, dims):
   """Plots a set of trajectories.
   
   Parameters
   ----------
-  data: array 
+  tjcs: array 
     A set of 2D (x, y) trajectories. Each point of is a float number.
   """ 
-  if len( data ) < 50:
-    palette = generate_palette( len( data ) )
-    for n, t in enumerate( data ):
-      t = np.array( t )
+  wm = plt.get_current_fig_manager()
+  wm.window.wm_geometry(dims)
+  plt.title(title)
+  plt.axis([0,16,0,12])
+  plt.xlabel('X (mts)')
+  plt.ylabel('Y (mts)')
+  
+  if len(tjcs) < 50:
+    palette = generate_palette(len(tjcs))
+    for n, t in enumerate(tjcs):
+      t = np.array(t)
       plt.plot( t[:,0], t[:,1], "-", c = palette[n] )
       plt.plot( t[-1,0], t[-1,1], "o", markersize = 5.0, c = palette[n] )
   else:
-    for t in data:
-      t = np.array( t )
-      plt.plot( t[:,0], t[:,1], "-" )
+    for t in tjcs:
+      t = np.array(t)
+      plt.plot(t[:,0], t[:,1], "-")
 
 
-def plot_clusters( e, data ):
+def plot_clusters(clusters, tjcs, title, dims):
   """Plots all the clusters and their corresponding trajectories.
   
   Parameters
   ----------
-  e: array_like
+  clusters: array_like
     A set of clusters. Each point of is a float number.
   
-  data: array_like
+  tjcs: array_like
     A set of 2D (x, y) trajectories. Each point of is a float number.
   """ 
-  M = e.shape[1]
-  palette = generate_palette( M )
-  e_total = np.sum( e )
-  for n, traj in enumerate( data ):
-    traj = np.array( traj )
+  wm = plt.get_current_fig_manager()
+  wm.window.wm_geometry(dims)
+  plt.axis([0,16,0,12])
+  plt.xlabel('X (mts)')
+  plt.ylabel('Y (mts)')
+  plt.title(title)
+
+  clusterLenght = clusters.shape[1]
+  palette = generate_palette(clusterLenght)
+  clustersTot = np.sum(clusters)
+  for n, traj in enumerate(tjcs):
+    traj = np.array(traj)
     c = np.array( [0., 0., 0.] )
-    if np.sum( e[n, :] ) / e_total > 1E-4:
-      e_m = np.sum( e[n, :] )
-      for m in xrange( M ):
-        c += palette[m] * e[n, m] / e_m
-      plt.plot( traj[:,0], traj[:,1], "-", color = c )
+    if np.sum(clusters[n, :]) / clustersTot > 1E-4:
+      clusterTot = np.sum(clusters[n, :])
+      for m in xrange(clusterLenght):
+        c += palette[m] * clusters[n, m]/clusterTot
+      plt.plot(traj[:,0], traj[:,1], "-", color = c)
     else:
-      c = np.array( [0.8, 0.8, 0.8] )
-      plt.plot( traj[:,0], traj[:,1], "-", color = c, alpha = 0.3 )
+      c = np.array([0.8, 0.8, 0.8])
+      plt.plot(traj[:,0], traj[:,1], "-", color = c, alpha = 0.3)
         
 
-def plot_time_model( data ):
+def plot_time_model(tjcs, title, dims):
   """From every cluster, plot a typical trajectory that represents the 
      entire cluster.
   
   Parameters
   ----------
-  data: array
+  tjcs: array
       An array containing all the clusters.
-  """   
-  palette = generate_palette(len(data))
-  for n, t in enumerate(data):
-    t = np.array(t)
-    plt.plot(t[:,0], t[:,1], "o", c = palette[n])
+  """ 
+  wm = plt.get_current_fig_manager()
+  wm.window.wm_geometry(dims)
+  plt.title(title)
+  plt.grid()
+  plt.xticks(np.arange(0, 16, 1.0))
+  plt.yticks(np.arange(0, 12, 1.0))
+  plt.xlabel('X (mts)')
+  plt.ylabel('Y (mts)')  
+  
+  palette = generate_palette(len(tjcs))
+  for tjcsN, tjc in enumerate(tjcs):
+    tjc = np.array(tjc)
+    plt.plot(tjc[:,0], tjc[:,1], "o", c = palette[tjcsN])
 
 
-def plot_prediction( clusters, obs, belief, prediction ):
+def plot_prediction( clusters, obs, obsStep, obsIni, belief, prediction ):
   """ Plot the observations, current belief state and predicted belief state at
   a time step given by the user.
   
@@ -107,15 +130,22 @@ def plot_prediction( clusters, obs, belief, prediction ):
     An array containing all the clusters.
       
   obs: array.
-    Set of trajectories used as observations..  
+    A trajectory used as an observation.  
   
   belief: matrix array
-    State at time t
+    Belief state at time t
     
   prediction: matrix array
-    State at time t+steps
+    Belief state at time t+steps
   """ 
-  palette = generate_palette(len(clusters))
+  wm = plt.get_current_fig_manager()
+  wm.window.wm_geometry("600x500+200+600")
+  plt.grid()
+  plt.xticks(np.arange(0, 16, 1.0))
+  plt.yticks(np.arange(0, 12, 1.0))
+  plt.xlabel('X (mts)')
+  plt.ylabel('Y (mts)')  
+  plt.title("Prediction for Obs. State Step %s" %obsIni )
   
   # Plot the observations (trajectories)
   plt.plot(obs[:,0], obs[:,1], "x", c = (0.8, 0.1, 0.3))
