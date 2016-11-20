@@ -42,6 +42,12 @@ def plot_trajectories(tjcs, title, dims):
   ----------
   tjcs: array 
     A set of 2D (x, y) trajectories. Each point of is a float number.
+    
+  title: string
+    A string with the title of the plot.
+  
+  dims: string
+    A string with the dimensions of the window of the plot.
   """ 
   wm = plt.get_current_fig_manager()
   wm.window.wm_geometry(dims)
@@ -72,6 +78,12 @@ def plot_clusters(clusters, tjcs, title, dims):
   
   tjcs: array_like
     A set of 2D (x, y) trajectories. Each point of is a float number.
+    
+  title: string
+    A string with the title of the plot.
+  
+  dims: string
+    A string with the dimensions of the window of the plot.
   """ 
   wm = plt.get_current_fig_manager()
   wm.window.wm_geometry(dims)
@@ -104,6 +116,12 @@ def plot_time_model(tjcs, title, dims):
   ----------
   tjcs: array
       An array containing all the clusters.
+      
+  title: string
+    A string with the title of the plot.
+  
+  dims: string
+    A string with the dimensions of the window of the plot.
   """ 
   wm = plt.get_current_fig_manager()
   wm.window.wm_geometry(dims)
@@ -130,13 +148,19 @@ def plot_prediction( clusters, obs, obsStep, obsIni, belief, prediction ):
     An array containing all the clusters.
       
   obs: array.
-    A trajectory used as an observation.  
-  
+    A trajectory used as an observation.
+    
+  obsStep: int
+    step of the prediction.
+    
+  obsIni: int 
+    Id of the observation being predicted.
+       
   belief: matrix array
-    Belief state at time t
+    Belief state at time t.
     
   prediction: matrix array
-    Belief state at time t+steps
+    Belief state at time t+steps.
   """ 
   wm = plt.get_current_fig_manager()
   wm.window.wm_geometry("600x500+200+600")
