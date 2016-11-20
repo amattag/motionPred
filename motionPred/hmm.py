@@ -1,7 +1,8 @@
 """
-Human motion prediction using a HMM
+Hidden Markov Model module.
 
-Hidden Markov Model model.
+In this module the main components and functions of a HMM are
+implemented.
 """
 
 # Author: Antonio Matta <antonio.matta@upm.es>
@@ -12,6 +13,21 @@ import numpy as np
 # The Transition Probability Matrix A
 def transProbMat(clustersN, stepsN):
 	"""
+	transProbMat: It computes a matrix with the transition probabilities
+	of the states present in the system.
+	
+	Parameters:
+	-----------
+	clustersN: int
+	  Number of clusters in the model.
+	
+	stepsN: int
+	  Number of steps in the model. 
+	
+	Returns:
+	--------
+	A : array of floats.
+	  Transition Probability Matrix.  
 	"""
 	A = np.zeros(( clustersN, stepsN, stepsN ))
 	for m in xrange(clustersN):
@@ -28,6 +44,20 @@ def transProbMat(clustersN, stepsN):
 # State Prior
 def statePrior(clustersN, stepsN):
 	"""
+	statePrior: It returns the state prior of the system.
+	
+	Parameters:
+	-----------
+	clustersN: int
+	  Number of clusters in the model.
+	
+	stepsN: int
+	  Number of steps in the model. 
+	
+	Returns:
+	--------
+	pi : array of floats.
+	  Initial belief of the model.  
 	"""
 	# A motion always starts at the beginning of the trajectory.
 	pi = np.zeros((clustersN, stepsN))
@@ -47,13 +77,13 @@ def filter(belief, A, means, invCov, obs, obsStep):
     belief: array
       Initial belief (state prior).
     
-    A: array
+    A: array of floats.
       Transition Probability Matrix.
       
     means: array
       Clusters array.
     
-    cov_inv: array matrix
+    invCov: array matrix
       Inverse of the Covariance Matrix
     
     obs: array
@@ -100,7 +130,7 @@ def predict(belief, A, stepsAhead):
         for m in xrange(clustersN):
             for currentStep in xrange(stepsN):
                 for prevStep in xrange(stepsN):
-                    currentState[m, currentStep] += belief[m, prevStep] * A[m, prevStep, currentStep]
+                    currentState[m, currentStep] += A[m, prevStep, currentStep] * belief[m, prevStep]
         currentState /= np.sum(currentState)
         belief = currentState
     return belief
