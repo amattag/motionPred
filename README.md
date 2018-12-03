@@ -4,6 +4,7 @@ It uses the Expectation Maximization Algorithm (E-M) to cluster a set of 2D traj
 and a Hidden Markov Model for filtering and predicting the state of the tracked pedestrian.
 
 ### Requirements
-- Python 2.7 or higher.
-- NumPy 1.11 or higher.
-- SciPy 0.17 or higher.
+- python 2.7 or higher.
+- numpy 1.11 or higher.
+- scipy 0.17 or higher.
+- matplotlib 1.5.1 or higher.
