@@ -24,7 +24,7 @@ import probability as pobty
 
 # Check if the correct input is given in command-line arguments.
 if len(sys.argv) != 5:
-	print('Usage: ./clustering.py $tjcsN $clustersN $maxIter $tol')
+	print('Usage: ./python clustering.py $tjcsN $clustersN $maxIter $tol')
 	sys.exit(1)         # Return a non-zero value for abnormal termination
 
 # Load arguments into variables.
