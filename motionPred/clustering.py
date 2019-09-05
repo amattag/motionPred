@@ -17,7 +17,7 @@ import time
 import sys
 import random
 
-# import auxiliar modules.
+# Import auxiliar modules.
 import expMax as em
 import plotting as myplt
 import probability as pobty
@@ -77,26 +77,26 @@ ll_old = 0
 i = 0
 while i < maxIter:
 	# E-M algorithm.
-    clusters = em.expectation(tjcs, means, covariance, pobty.t_gaussian)
-    em.maximization(tjcs, clusters, means, pobty.t_zero)
-    
-    # Update log likelihoood.
-    ll_new = 0.0
-    for j in range(tjcsN):
+	clusters = em.expectation(tjcs, means, covariance, pobty.t_gaussian)
+	em.maximization(tjcs, clusters, means, pobty.t_zero)
+	
+	# Update log likelihoood.
+	ll_new = 0.0
+	for j in range(tjcsN):
 		s = 0
 		for k in range(clustersN):
 			s += pobty.t_gaussian(means[k], covariance, tjcs[j])
 		ll_new += np.log(s)
 		
 	# If the threshold is below the expected tol factor.
-    if np.abs(ll_new - ll_old) < tol:
+	if np.abs(ll_new - ll_old) < tol:
 		# If found, replace the worst cluster with the worst represented trajectory 
 		# in order to improve the quality of the returned clusters.
-		
-		# Finds worst cluster and its index.
+			
+		# It finds worst cluster and its index.
 		clusterIndex, clusterScore = em.worst_cluster(clusters)
 		
-		# Finds the index of the worst represented trajectory.
+		# it finds the index of the worst represented trajectory.
 		tjcIndex = em.worst_trajectory(clusters, clusterIndex, clusterScore, meansIndex, tjcs, covariance)
 		
 		# If the worst represented trajectory score is higher than the worst cluster score,
@@ -110,11 +110,10 @@ while i < maxIter:
 			ll_old = 0
 			i = 0
 			continue
-    else:
+	else:
 		ll_old = ll_new
 		i += 1
-		 
-    print "Iteration Number: ", i 
+	print "Iteration Number: ", i 
     
 # This is to plot the results of the E-M algorithm.
 fig2 = plt.figure()

@@ -24,6 +24,7 @@ def teardown():
 	print "TEAR DOWN!"
 	
 def test_trajectory():
+	"""To test a trajectory structure"""
 	global tjcs
 	tjcs = data[:tjcsN]
 	assert_equal(tjcs.shape[0], 200)
