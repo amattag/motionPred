@@ -1,0 +1,22 @@
+{
+  "auth_data": {
+    "client_id" : "1_29hsg3452mtck4cgcss04so84goccckgc48ksccc4okocksss8",
+    "client_secret" : "2tfxr8j568sgg40ko04sokokw4g04sg0kkg04wco0k8gw4ww4w",
+    "username" : "ipiworker",
+    "password" : "Wie6aith",
+    "grant_type" : "password"
+  },
+  "auth_config": {
+    "auth_url" : "/oauth/v2/token",
+    "base_url" : "http://dev.appcconline.com"
+  },
+  "register_config" : {
+     "create_url" : "/api/register-instance-create"
+  },
+  "register_data" : {
+    "element_id" : 16,
+    "register_type" : 7,
+    "device_id"   : "RASPBERRY NTC",
+    "source" : 2
+  }
+}
